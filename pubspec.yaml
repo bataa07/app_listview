@@ -1,0 +1,36 @@
+name: app_listview
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  freezed_annotation: ^2.2.0
+  json_annotation: ^4.7.0
+  hooks_riverpod: ^2.1.0
+  faker: ^2.0.0
+  scrollable_positioned_list: ^0.3.5
+  visibility_detector: ^0.3.3
+  infinite_scroll_pagination: ^3.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+  build_runner: ^2.3.0
+  freezed: ^2.2.0
+  json_serializable: ^6.5.3
+  retrofit_generator: ^4.2.0
+
+flutter:
+
+  uses-material-design: true

@@ -362,6 +362,8 @@ mixin _$Project {
   int get currentStep => throw _privateConstructorUsedError;
   double get progress => throw _privateConstructorUsedError;
   List<ProjectMember> get members => throw _privateConstructorUsedError;
+  List<Project> get subProjects => throw _privateConstructorUsedError;
+  bool get isParent => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -387,6 +389,8 @@ abstract class $ProjectCopyWith<$Res> {
       int currentStep,
       double progress,
       List<ProjectMember> members,
+      List<Project> subProjects,
+      bool isParent,
       bool isLoading});
 }
 
@@ -415,6 +419,8 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
     Object? currentStep = null,
     Object? progress = null,
     Object? members = null,
+    Object? subProjects = null,
+    Object? isParent = null,
     Object? isLoading = null,
   }) {
     return _then(_value.copyWith(
@@ -466,6 +472,14 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
           ? _value.members
           : members // ignore: cast_nullable_to_non_nullable
               as List<ProjectMember>,
+      subProjects: null == subProjects
+          ? _value.subProjects
+          : subProjects // ignore: cast_nullable_to_non_nullable
+              as List<Project>,
+      isParent: null == isParent
+          ? _value.isParent
+          : isParent // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -494,6 +508,8 @@ abstract class _$$_ProjectCopyWith<$Res> implements $ProjectCopyWith<$Res> {
       int currentStep,
       double progress,
       List<ProjectMember> members,
+      List<Project> subProjects,
+      bool isParent,
       bool isLoading});
 }
 
@@ -519,6 +535,8 @@ class __$$_ProjectCopyWithImpl<$Res>
     Object? currentStep = null,
     Object? progress = null,
     Object? members = null,
+    Object? subProjects = null,
+    Object? isParent = null,
     Object? isLoading = null,
   }) {
     return _then(_$_Project(
@@ -570,6 +588,14 @@ class __$$_ProjectCopyWithImpl<$Res>
           ? _value._members
           : members // ignore: cast_nullable_to_non_nullable
               as List<ProjectMember>,
+      subProjects: null == subProjects
+          ? _value._subProjects
+          : subProjects // ignore: cast_nullable_to_non_nullable
+              as List<Project>,
+      isParent: null == isParent
+          ? _value.isParent
+          : isParent // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -594,8 +620,11 @@ class _$_Project implements _Project {
       required this.currentStep,
       required this.progress,
       required final List<ProjectMember> members,
+      required final List<Project> subProjects,
+      this.isParent = false,
       this.isLoading = false})
-      : _members = members;
+      : _members = members,
+        _subProjects = subProjects;
 
   factory _$_Project.fromJson(Map<String, dynamic> json) =>
       _$$_ProjectFromJson(json);
@@ -629,13 +658,23 @@ class _$_Project implements _Project {
     return EqualUnmodifiableListView(_members);
   }
 
+  final List<Project> _subProjects;
+  @override
+  List<Project> get subProjects {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_subProjects);
+  }
+
+  @override
+  @JsonKey()
+  final bool isParent;
   @override
   @JsonKey()
   final bool isLoading;
 
   @override
   String toString() {
-    return 'Project(id: $id, name: $name, description: $description, organizationId: $organizationId, budget: $budget, startDate: $startDate, endDate: $endDate, status: $status, createdAt: $createdAt, currentStep: $currentStep, progress: $progress, members: $members, isLoading: $isLoading)';
+    return 'Project(id: $id, name: $name, description: $description, organizationId: $organizationId, budget: $budget, startDate: $startDate, endDate: $endDate, status: $status, createdAt: $createdAt, currentStep: $currentStep, progress: $progress, members: $members, subProjects: $subProjects, isParent: $isParent, isLoading: $isLoading)';
   }
 
   @override
@@ -661,6 +700,10 @@ class _$_Project implements _Project {
             (identical(other.progress, progress) ||
                 other.progress == progress) &&
             const DeepCollectionEquality().equals(other._members, _members) &&
+            const DeepCollectionEquality()
+                .equals(other._subProjects, _subProjects) &&
+            (identical(other.isParent, isParent) ||
+                other.isParent == isParent) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading));
   }
@@ -681,6 +724,8 @@ class _$_Project implements _Project {
       currentStep,
       progress,
       const DeepCollectionEquality().hash(_members),
+      const DeepCollectionEquality().hash(_subProjects),
+      isParent,
       isLoading);
 
   @JsonKey(ignore: true)
@@ -711,6 +756,8 @@ abstract class _Project implements Project {
       required final int currentStep,
       required final double progress,
       required final List<ProjectMember> members,
+      required final List<Project> subProjects,
+      final bool isParent,
       final bool isLoading}) = _$_Project;
 
   factory _Project.fromJson(Map<String, dynamic> json) = _$_Project.fromJson;
@@ -739,6 +786,10 @@ abstract class _Project implements Project {
   double get progress;
   @override
   List<ProjectMember> get members;
+  @override
+  List<Project> get subProjects;
+  @override
+  bool get isParent;
   @override
   bool get isLoading;
   @override

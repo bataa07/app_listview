@@ -49,6 +49,10 @@ _$_Project _$$_ProjectFromJson(Map<String, dynamic> json) => _$_Project(
       members: (json['members'] as List<dynamic>)
           .map((e) => ProjectMember.fromJson(e as Map<String, dynamic>))
           .toList(),
+      subProjects: (json['subProjects'] as List<dynamic>)
+          .map((e) => Project.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      isParent: json['isParent'] as bool? ?? false,
       isLoading: json['isLoading'] as bool? ?? false,
     );
 
@@ -66,5 +70,7 @@ Map<String, dynamic> _$$_ProjectToJson(_$_Project instance) =>
       'currentStep': instance.currentStep,
       'progress': instance.progress,
       'members': instance.members,
+      'subProjects': instance.subProjects,
+      'isParent': instance.isParent,
       'isLoading': instance.isLoading,
     };

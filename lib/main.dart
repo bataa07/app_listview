@@ -4,6 +4,7 @@ import 'package:app_listview/providers/project_list_provider.dart';
 import 'package:app_listview/shimmer/shimmer_loader.dart';
 import 'package:app_listview/shimmer/skeleton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
@@ -81,43 +82,45 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
 
     ref.listen(widget.provider, (_, state) {
       if (ref.read(widget.provider.notifier).isDataState()) {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          if (_scrollController.position.maxScrollExtent <= 0) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          double maxScroll = _scrollController.position.maxScrollExtent;
+          double currentScroll = _scrollController.position.pixels;
+
+          if (maxScroll <= 0) {
             ref.read(widget.provider.notifier).fetchNextData();
+
+            return;
+          }
+
+          if (maxScroll == currentScroll) {
+            ref.read(widget.provider.notifier).fetchNextData();
+
+            return;
           }
         });
       }
     });
 
+    print('ProjectContent build');
+
     return state.when(
       data: (projects) {
-        return ReorderableListView.builder(
-          buildDefaultDragHandles: false,
+        return ListView.builder(
           key: pageStorageKey,
-          scrollController: _scrollController,
+          controller: _scrollController,
           itemCount: projects.length,
           shrinkWrap: true,
           itemBuilder: (context, index) {
             final project = projects[index];
             GlobalKey itemKey = GlobalKey();
 
-            return ReorderableDragStartListener(
-              key: itemKey,
+            return DraggableListItem(
               index: index,
-              child: ListTile(
-                minVerticalPadding: 0.0,
-                onTap: () => print(project.toJson()),
-                leading: Text(project.id.toString()),
-                title: Text(project.name),
-              ),
+              project: project,
+              itemKey: itemKey,
+              provider: widget.provider,
+              child: ListItem(key: itemKey, project: project),
             );
-          },
-          onReorder: (int oldIndex, int newIndex) {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-
-            ref.read(widget.provider.notifier).reorderItem(oldIndex, newIndex);
           },
         );
       },
@@ -149,11 +152,7 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
 
             final project = projects[index];
 
-            return ListTile(
-              minVerticalPadding: 0.0,
-              leading: Text(project.id.toString()),
-              title: Text(project.name),
-            );
+            return ListItem(project: project);
           },
         );
       },
@@ -166,14 +165,108 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
           itemBuilder: (context, index) {
             final project = projects[index];
 
-            return ListTile(
-              minVerticalPadding: 0.0,
-              leading: Text(project.id.toString()),
-              title: Text(project.name),
-            );
+            return ListItem(project: project);
           },
         );
       },
+    );
+  }
+}
+
+class DraggableListItem extends HookConsumerWidget {
+  const DraggableListItem({
+    super.key,
+    required this.project,
+    required this.itemKey,
+    required this.provider,
+    required this.index,
+    required this.child,
+  });
+
+  final int index;
+  final Project project;
+  final GlobalKey<State<StatefulWidget>> itemKey;
+  final StateNotifierProvider<PaginationNotifier<Project>,
+      PaginationState<Project>> provider;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tempProject = useState<Project?>(null);
+
+    return Draggable<Project>(
+      data: project,
+      feedback: Opacity(
+        opacity: 0.8,
+        child: FeedbackWidget(
+          dragChildKey: itemKey,
+          child: child,
+        ),
+      ),
+      onDragStarted: () {
+        tempProject.value = project;
+        ref.read(provider.notifier).removeAt(index);
+      },
+      onDraggableCanceled: (velocity, offset) {
+        ref.read(provider.notifier).insert(index, tempProject.value!);
+      },
+      child: DragTarget<Project>(
+        builder: (context, candidates, rejects) {
+          return child;
+        },
+        onWillAccept: (value) => true,
+        onAccept: (value) => ref.read(provider.notifier).insert(index, value),
+      ),
+    );
+  }
+}
+
+class ListItem extends StatefulWidget {
+  const ListItem({
+    Key? key,
+    required this.project,
+  }) : super(key: key);
+
+  final Project project;
+
+  @override
+  State<ListItem> createState() => _ListItemState();
+}
+
+class _ListItemState extends State<ListItem> {
+  late PageStorageKey pageStorageKey;
+
+  @override
+  void initState() {
+    super.initState();
+
+    pageStorageKey =
+        PageStorageKey<String>('project${widget.project.hashCode}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.project.isParent) {
+      return ListTile(
+        minVerticalPadding: 0.0,
+        onTap: () => print(widget.project.toJson()),
+        leading: Text(widget.project.id.toString()),
+        title: Text(widget.project.name),
+      );
+    }
+
+    return ExpansionTile(
+      key: pageStorageKey,
+      leading: Text(widget.project.id.toString()),
+      title: Text(widget.project.name),
+      children: widget.project.subProjects.map(
+        (subProject) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 32.0),
+            child: ListItem(project: subProject),
+          );
+        },
+      ).toList(),
     );
   }
 }

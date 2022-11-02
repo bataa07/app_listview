@@ -8,7 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final selectedProjectProvider = StateProvider<Project?>((_) => null);
 
-final projectsProvider1 = StateNotifierProvider<PaginationNotifier<Project>,
+final projectsProvider = StateNotifierProvider<PaginationNotifier<Project>,
     PaginationState<Project>>((ref) {
   int pageSize = 10;
   int totalRecords = 0;
@@ -18,29 +18,15 @@ final projectsProvider1 = StateNotifierProvider<PaginationNotifier<Project>,
   return PaginationNotifier(
     pageSize: pageSize,
     totalRecords: totalRecords,
-    fetchData: () async => await _fetchData(id, employeeId),
+    fetchData: () async => await _fetchData(id, employeeId, pageSize),
   )..init();
 });
 
-final projectsProvider2 = StateNotifierProvider<PaginationNotifier<Project>,
-    PaginationState<Project>>((ref) {
-  int pageSize = 10;
-  int totalRecords = 0;
-  int id = 0;
-  int employeeId = 0;
-
-  return PaginationNotifier(
-    pageSize: pageSize,
-    totalRecords: totalRecords,
-    fetchData: () async => await _fetchData(id, employeeId),
-  )..init();
-});
-
-Future<List<Project>> _fetchData(int id, int employeeId) async {
+Future<List<Project>> _fetchData(int id, int employeeId, int pageSize) async {
   List<Project> value = [];
 
   await Future.delayed(const Duration(seconds: 3), () {
-    value = List<Project>.generate(10, (index) {
+    value = List<Project>.generate(pageSize, (index) {
       id += 1;
 
       int memberCount = Faker().randomGenerator.integer(5, min: 0);
@@ -141,7 +127,11 @@ class PaginationNotifier<T> extends StateNotifier<PaginationState<T>> {
     }
   }
 
+  bool isDataState() => state == PaginationState<T>.data(_items);
+
   Future<void> fetchNextData() async {
+    print("fetchNextData");
+
     if (isLastPage) {
       print("isLastPage: $isLastPage");
 

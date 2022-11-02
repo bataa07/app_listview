@@ -76,7 +76,7 @@ Future<List<Project>> _fetchData(int id, int employeeId, int pageSize) async {
 
       return Project(
         id: id,
-        name: Faker().vehicle.model(),
+        name: isParent ? Faker().vehicle.make() : Faker().vehicle.model(),
         budget: Faker().randomGenerator.integer(15000, min: 100),
         createdAt:
             Faker().date.dateTime(minYear: 1990, maxYear: 2022).toString(),

@@ -193,6 +193,7 @@ class DraggableListItem extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tempProject = useState<Project?>(null);
+    final isTop = useState<bool>(true);
 
     return Draggable<Project>(
       data: project,
@@ -212,10 +213,50 @@ class DraggableListItem extends HookConsumerWidget {
       },
       child: DragTarget<Project>(
         builder: (context, candidates, rejects) {
+          if (candidates.isNotEmpty) {
+            return Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: isTop.value
+                      ? const BorderSide(
+                          color: Colors.red,
+                          width: 4.0,
+                        )
+                      : BorderSide.none,
+                  bottom: !isTop.value
+                      ? const BorderSide(
+                          color: Colors.red,
+                          width: 4.0,
+                        )
+                      : BorderSide.none,
+                ),
+              ),
+              child: child,
+            );
+          }
+
           return child;
         },
         onWillAccept: (value) => true,
-        onAccept: (value) => ref.read(provider.notifier).insert(index, value),
+        onMove: (details) {
+          final RenderBox renderBox =
+              itemKey.currentContext?.findRenderObject() as RenderBox;
+
+          final startY = renderBox.localToGlobal(Offset.zero).dy;
+          final height = renderBox.size.height;
+          final centerY = startY + height / 4;
+
+          if (details.offset.dy < centerY) {
+            isTop.value = true;
+          } else {
+            isTop.value = false;
+          }
+        },
+        onAccept: (value) {
+          ref
+              .read(provider.notifier)
+              .insert(isTop.value ? index : index + 1, value);
+        },
       ),
     );
   }
@@ -246,28 +287,26 @@ class _ListItemState extends State<ListItem> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.project.isParent) {
-      return ListTile(
-        minVerticalPadding: 0.0,
-        onTap: () => print(widget.project.toJson()),
-        leading: Text(widget.project.id.toString()),
-        title: Text(widget.project.name),
-      );
-    }
-
-    return ExpansionTile(
-      key: pageStorageKey,
-      leading: Text(widget.project.id.toString()),
-      title: Text(widget.project.name),
-      children: widget.project.subProjects.map(
-        (subProject) {
-          return Padding(
-            padding: const EdgeInsets.only(left: 32.0),
-            child: ListItem(project: subProject),
+    return widget.project.isParent
+        ? ExpansionTile(
+            key: pageStorageKey,
+            leading: Text(widget.project.id.toString()),
+            title: Text(widget.project.name),
+            children: widget.project.subProjects.map(
+              (subProject) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 32.0),
+                  child: ListItem(project: subProject),
+                );
+              },
+            ).toList(),
+          )
+        : ListTile(
+            minVerticalPadding: 0.0,
+            onTap: () => print(widget.project.toJson()),
+            leading: Text(widget.project.id.toString()),
+            title: Text(widget.project.name),
           );
-        },
-      ).toList(),
-    );
   }
 }
 
@@ -292,25 +331,6 @@ class FeedbackWidget extends StatelessWidget {
       width: size.width,
       height: size.height,
       child: Material(child: child),
-    );
-  }
-}
-
-class ListenPointer extends StatelessWidget {
-  const ListenPointer({
-    super.key,
-    required this.child,
-  });
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Listener(
-      child: child,
-      onPointerMove: (PointerMoveEvent event) {
-        print("x: ${event.position.dx}, y: ${event.position.dy}");
-      },
     );
   }
 }

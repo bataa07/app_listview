@@ -6,6 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+enum DragPosition { top, bottom }
+
+class DragDetails {
+  final bool isDragging;
+  final DragPosition position;
+
+  DragDetails(this.isDragging, this.position);
+}
+
+final isDraggingProvider = StateProvider<DragDetails>(
+    ((_) => DragDetails(false, DragPosition.bottom)));
+
 class DraggableListItem extends HookConsumerWidget {
   const DraggableListItem({
     super.key,
@@ -14,8 +26,14 @@ class DraggableListItem extends HookConsumerWidget {
     required this.provider,
     required this.index,
     required this.child,
+    this.onDragToBottom,
+    this.onDragToTop,
+    this.parentConstraint,
   });
 
+  final BoxConstraints? parentConstraint;
+  final Function()? onDragToBottom;
+  final Function()? onDragToTop;
   final int index;
   final Project project;
   final GlobalKey<State<StatefulWidget>> itemKey;
@@ -43,17 +61,13 @@ class DraggableListItem extends HookConsumerWidget {
         tempProject.value = project;
       },
       onDragUpdate: (details) {
-        final box = context.findAncestorRenderObjectOfType() as RenderBox;
-        print(box.size);
-
-        // print(details.delta);
-        // print(details.globalPosition);
+        _handleDrag(ref, details);
       },
       onDragCompleted: () {
         ref.read(provider.notifier).removeAt(index);
       },
-      onDraggableCanceled: (velocity, offset) =>
-          ref.read(provider.notifier).insert(index, tempProject.value!),
+      // onDraggableCanceled: (velocity, offset) =>
+      //     ref.read(provider.notifier).insert(index, tempProject.value!),
       child: DragTarget<Project>(
         builder: (context, candidates, rejects) {
           if (candidates.isNotEmpty) {
@@ -110,5 +124,33 @@ class DraggableListItem extends HookConsumerWidget {
         },
       ),
     );
+  }
+
+  void _handleDrag(
+    WidgetRef ref,
+    DragUpdateDetails details,
+  ) {
+    final parentListMaxHeight = parentConstraint!.maxHeight;
+    final parentListMinHeight = parentConstraint!.minHeight;
+    final targetGlobalVeritcalPosition = details.globalPosition.dy;
+
+    if (targetGlobalVeritcalPosition > 0 &&
+        targetGlobalVeritcalPosition >= parentListMaxHeight - 50.0) {
+      ref.read(isDraggingProvider.notifier).state =
+          DragDetails(true, DragPosition.bottom);
+      // if (isDragging.value) {
+      //   onDragToBottom?.call();
+      // }
+    } else if (targetGlobalVeritcalPosition < 100 &&
+        targetGlobalVeritcalPosition <= parentListMinHeight + 150.0) {
+      ref.read(isDraggingProvider.notifier).state =
+          DragDetails(true, DragPosition.top);
+      // if (isDragging.value) {
+      //   onDragToTop?.call();
+      // }
+    } else {
+      ref.read(isDraggingProvider.notifier).state =
+          DragDetails(false, DragPosition.bottom);
+    }
   }
 }

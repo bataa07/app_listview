@@ -26,10 +26,45 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
   final _pageKey = const PageStorageKey<String>('projects');
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final state = ref.watch(widget.provider);
+    final dragDetails = ref.watch(isDraggingProvider);
 
-    return state.when(
+    void _scrollDown() {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(seconds: 2),
+        curve: Curves.fastOutSlowIn,
+      );
+      _scrollController.jumpTo(_scrollController.offset + 3);
+    }
+
+    void _scrollUp() {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(seconds: 10),
+        curve: Curves.fastOutSlowIn,
+      );
+      var to = _scrollController.offset - 3;
+      to = (to < 0) ? 0 : to;
+      _scrollController.jumpTo(to);
+    }
+
+    if (dragDetails.isDragging && dragDetails.position == DragPosition.top) {
+      _scrollUp();
+    }
+    if (dragDetails.isDragging && dragDetails.position == DragPosition.bottom) {
+      _scrollDown();
+    }
+
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return state.when(
         data: (projects) {
           return ListView.builder(
             key: _pageKey,
@@ -53,6 +88,9 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
                   }
                 },
                 child: DraggableListItem(
+                  // onDragToBottom: () => _scrollDown(),
+                  // onDragToTop: () => _scrollUp(),
+                  parentConstraint: constraints,
                   index: index,
                   project: project,
                   itemKey: itemKey,
@@ -114,6 +152,8 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
               );
             },
           );
-        });
+        },
+      );
+    });
   }
 }

@@ -172,7 +172,13 @@ class PaginationNotifier<T> extends StateNotifier<PaginationState<T>> {
 
     print("Fetching next batch of items");
 
-    state = PaginationState.onLoading(_items);
+    if (parentItem != null) {
+      int parentIndex = _items.indexOf(parentItem);
+
+      state = PaginationState.onLoading(_items, parentIndex);
+    } else {
+      state = PaginationState.onLoading(_items, _items.length - 1);
+    }
 
     try {
       final result = await fetchData(parentItem);

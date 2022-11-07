@@ -21,7 +21,7 @@ mixin _$PaginationState<T> {
     required TResult Function(List<T> items) data,
     required TResult Function() loading,
     required TResult Function(Object? e, StackTrace? stk) error,
-    required TResult Function(List<T> items) onLoading,
+    required TResult Function(List<T> items, int? index) onLoading,
     required TResult Function(List<T> items, Object? e, StackTrace? stk)
         onError,
   }) =>
@@ -31,7 +31,7 @@ mixin _$PaginationState<T> {
     TResult? Function(List<T> items)? data,
     TResult? Function()? loading,
     TResult? Function(Object? e, StackTrace? stk)? error,
-    TResult? Function(List<T> items)? onLoading,
+    TResult? Function(List<T> items, int? index)? onLoading,
     TResult? Function(List<T> items, Object? e, StackTrace? stk)? onError,
   }) =>
       throw _privateConstructorUsedError;
@@ -40,7 +40,7 @@ mixin _$PaginationState<T> {
     TResult Function(List<T> items)? data,
     TResult Function()? loading,
     TResult Function(Object? e, StackTrace? stk)? error,
-    TResult Function(List<T> items)? onLoading,
+    TResult Function(List<T> items, int? index)? onLoading,
     TResult Function(List<T> items, Object? e, StackTrace? stk)? onError,
     required TResult orElse(),
   }) =>
@@ -163,7 +163,7 @@ class _$_Data<T> implements _Data<T> {
     required TResult Function(List<T> items) data,
     required TResult Function() loading,
     required TResult Function(Object? e, StackTrace? stk) error,
-    required TResult Function(List<T> items) onLoading,
+    required TResult Function(List<T> items, int? index) onLoading,
     required TResult Function(List<T> items, Object? e, StackTrace? stk)
         onError,
   }) {
@@ -176,7 +176,7 @@ class _$_Data<T> implements _Data<T> {
     TResult? Function(List<T> items)? data,
     TResult? Function()? loading,
     TResult? Function(Object? e, StackTrace? stk)? error,
-    TResult? Function(List<T> items)? onLoading,
+    TResult? Function(List<T> items, int? index)? onLoading,
     TResult? Function(List<T> items, Object? e, StackTrace? stk)? onError,
   }) {
     return data?.call(items);
@@ -188,7 +188,7 @@ class _$_Data<T> implements _Data<T> {
     TResult Function(List<T> items)? data,
     TResult Function()? loading,
     TResult Function(Object? e, StackTrace? stk)? error,
-    TResult Function(List<T> items)? onLoading,
+    TResult Function(List<T> items, int? index)? onLoading,
     TResult Function(List<T> items, Object? e, StackTrace? stk)? onError,
     required TResult orElse(),
   }) {
@@ -289,7 +289,7 @@ class _$_Loading<T> implements _Loading<T> {
     required TResult Function(List<T> items) data,
     required TResult Function() loading,
     required TResult Function(Object? e, StackTrace? stk) error,
-    required TResult Function(List<T> items) onLoading,
+    required TResult Function(List<T> items, int? index) onLoading,
     required TResult Function(List<T> items, Object? e, StackTrace? stk)
         onError,
   }) {
@@ -302,7 +302,7 @@ class _$_Loading<T> implements _Loading<T> {
     TResult? Function(List<T> items)? data,
     TResult? Function()? loading,
     TResult? Function(Object? e, StackTrace? stk)? error,
-    TResult? Function(List<T> items)? onLoading,
+    TResult? Function(List<T> items, int? index)? onLoading,
     TResult? Function(List<T> items, Object? e, StackTrace? stk)? onError,
   }) {
     return loading?.call();
@@ -314,7 +314,7 @@ class _$_Loading<T> implements _Loading<T> {
     TResult Function(List<T> items)? data,
     TResult Function()? loading,
     TResult Function(Object? e, StackTrace? stk)? error,
-    TResult Function(List<T> items)? onLoading,
+    TResult Function(List<T> items, int? index)? onLoading,
     TResult Function(List<T> items, Object? e, StackTrace? stk)? onError,
     required TResult orElse(),
   }) {
@@ -441,7 +441,7 @@ class _$_Error<T> implements _Error<T> {
     required TResult Function(List<T> items) data,
     required TResult Function() loading,
     required TResult Function(Object? e, StackTrace? stk) error,
-    required TResult Function(List<T> items) onLoading,
+    required TResult Function(List<T> items, int? index) onLoading,
     required TResult Function(List<T> items, Object? e, StackTrace? stk)
         onError,
   }) {
@@ -454,7 +454,7 @@ class _$_Error<T> implements _Error<T> {
     TResult? Function(List<T> items)? data,
     TResult? Function()? loading,
     TResult? Function(Object? e, StackTrace? stk)? error,
-    TResult? Function(List<T> items)? onLoading,
+    TResult? Function(List<T> items, int? index)? onLoading,
     TResult? Function(List<T> items, Object? e, StackTrace? stk)? onError,
   }) {
     return error?.call(e, stk);
@@ -466,7 +466,7 @@ class _$_Error<T> implements _Error<T> {
     TResult Function(List<T> items)? data,
     TResult Function()? loading,
     TResult Function(Object? e, StackTrace? stk)? error,
-    TResult Function(List<T> items)? onLoading,
+    TResult Function(List<T> items, int? index)? onLoading,
     TResult Function(List<T> items, Object? e, StackTrace? stk)? onError,
     required TResult orElse(),
   }) {
@@ -533,7 +533,7 @@ abstract class _$$_OnLoadingCopyWith<T, $Res> {
           _$_OnLoading<T> value, $Res Function(_$_OnLoading<T>) then) =
       __$$_OnLoadingCopyWithImpl<T, $Res>;
   @useResult
-  $Res call({List<T> items});
+  $Res call({List<T> items, int? index});
 }
 
 /// @nodoc
@@ -548,12 +548,17 @@ class __$$_OnLoadingCopyWithImpl<T, $Res>
   @override
   $Res call({
     Object? items = null,
+    Object? index = freezed,
   }) {
     return _then(_$_OnLoading<T>(
       null == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
               as List<T>,
+      freezed == index
+          ? _value.index
+          : index // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -561,7 +566,7 @@ class __$$_OnLoadingCopyWithImpl<T, $Res>
 /// @nodoc
 
 class _$_OnLoading<T> implements _OnLoading<T> {
-  const _$_OnLoading(final List<T> items) : _items = items;
+  const _$_OnLoading(final List<T> items, [this.index]) : _items = items;
 
   final List<T> _items;
   @override
@@ -571,8 +576,11 @@ class _$_OnLoading<T> implements _OnLoading<T> {
   }
 
   @override
+  final int? index;
+
+  @override
   String toString() {
-    return 'PaginationState<$T>.onLoading(items: $items)';
+    return 'PaginationState<$T>.onLoading(items: $items, index: $index)';
   }
 
   @override
@@ -580,12 +588,13 @@ class _$_OnLoading<T> implements _OnLoading<T> {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_OnLoading<T> &&
-            const DeepCollectionEquality().equals(other._items, _items));
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.index, index) || other.index == index));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_items));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_items), index);
 
   @JsonKey(ignore: true)
   @override
@@ -599,11 +608,11 @@ class _$_OnLoading<T> implements _OnLoading<T> {
     required TResult Function(List<T> items) data,
     required TResult Function() loading,
     required TResult Function(Object? e, StackTrace? stk) error,
-    required TResult Function(List<T> items) onLoading,
+    required TResult Function(List<T> items, int? index) onLoading,
     required TResult Function(List<T> items, Object? e, StackTrace? stk)
         onError,
   }) {
-    return onLoading(items);
+    return onLoading(items, index);
   }
 
   @override
@@ -612,10 +621,10 @@ class _$_OnLoading<T> implements _OnLoading<T> {
     TResult? Function(List<T> items)? data,
     TResult? Function()? loading,
     TResult? Function(Object? e, StackTrace? stk)? error,
-    TResult? Function(List<T> items)? onLoading,
+    TResult? Function(List<T> items, int? index)? onLoading,
     TResult? Function(List<T> items, Object? e, StackTrace? stk)? onError,
   }) {
-    return onLoading?.call(items);
+    return onLoading?.call(items, index);
   }
 
   @override
@@ -624,12 +633,12 @@ class _$_OnLoading<T> implements _OnLoading<T> {
     TResult Function(List<T> items)? data,
     TResult Function()? loading,
     TResult Function(Object? e, StackTrace? stk)? error,
-    TResult Function(List<T> items)? onLoading,
+    TResult Function(List<T> items, int? index)? onLoading,
     TResult Function(List<T> items, Object? e, StackTrace? stk)? onError,
     required TResult orElse(),
   }) {
     if (onLoading != null) {
-      return onLoading(items);
+      return onLoading(items, index);
     }
     return orElse();
   }
@@ -676,9 +685,11 @@ class _$_OnLoading<T> implements _OnLoading<T> {
 }
 
 abstract class _OnLoading<T> implements PaginationState<T> {
-  const factory _OnLoading(final List<T> items) = _$_OnLoading<T>;
+  const factory _OnLoading(final List<T> items, [final int? index]) =
+      _$_OnLoading<T>;
 
   List<T> get items;
+  int? get index;
   @JsonKey(ignore: true)
   _$$_OnLoadingCopyWith<T, _$_OnLoading<T>> get copyWith =>
       throw _privateConstructorUsedError;
@@ -774,7 +785,7 @@ class _$_OnGoingError<T> implements _OnGoingError<T> {
     required TResult Function(List<T> items) data,
     required TResult Function() loading,
     required TResult Function(Object? e, StackTrace? stk) error,
-    required TResult Function(List<T> items) onLoading,
+    required TResult Function(List<T> items, int? index) onLoading,
     required TResult Function(List<T> items, Object? e, StackTrace? stk)
         onError,
   }) {
@@ -787,7 +798,7 @@ class _$_OnGoingError<T> implements _OnGoingError<T> {
     TResult? Function(List<T> items)? data,
     TResult? Function()? loading,
     TResult? Function(Object? e, StackTrace? stk)? error,
-    TResult? Function(List<T> items)? onLoading,
+    TResult? Function(List<T> items, int? index)? onLoading,
     TResult? Function(List<T> items, Object? e, StackTrace? stk)? onError,
   }) {
     return onError?.call(items, e, stk);
@@ -799,7 +810,7 @@ class _$_OnGoingError<T> implements _OnGoingError<T> {
     TResult Function(List<T> items)? data,
     TResult Function()? loading,
     TResult Function(Object? e, StackTrace? stk)? error,
-    TResult Function(List<T> items)? onLoading,
+    TResult Function(List<T> items, int? index)? onLoading,
     TResult Function(List<T> items, Object? e, StackTrace? stk)? onError,
     required TResult orElse(),
   }) {

@@ -67,14 +67,16 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
         },
         loading: () => const ShimmerLoader(shimmerItem: Skeleton()),
         error: (error, stackTrace) => Center(child: Text(error.toString())),
-        onLoading: (projects) {
+        onLoading: (projects, selectedIndex) {
+          print('selectedIndex: $selectedIndex, projects: ${projects.length}');
+
           return ListView.builder(
             key: _pageKey,
             shrinkWrap: true,
             controller: _scrollController,
             itemCount: projects.length + 10,
             itemBuilder: (context, index) {
-              if (index >= projects.length) {
+              if (selectedIndex! < index && selectedIndex + 10 >= index) {
                 return const Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),

@@ -83,54 +83,8 @@ class PaginationNotifier<T> extends StateNotifier<PaginationState<T>> {
 
   int indexOf(T item) => _items.indexOf(item);
 
-  void updateItem(T oldItem, T newItem) {
-    int index = _items.indexWhere((item) => oldItem == item);
-
-    if (index == -1) return;
-
-    _items[index] = newItem;
-
-    state = PaginationState.data(_items);
-  }
-
-  void reorderItem(int oldIndex, int newIndex, [T? newItem]) {
-    T temp = newItem ?? _items[oldIndex];
-
-    _items.removeAt(oldIndex);
-    _items.insert(newIndex, temp);
-
-    state = PaginationState.data(_items);
-  }
-
   void removeAt(int index) {
     _items.removeAt(index);
-
-    state = PaginationState.data(_items);
-  }
-
-  void remove(T item, {required bool isSubItem}) {
-    if (isSubItem) {
-      Map<String, dynamic> mapSubItem = jsonDecode(jsonEncode(item));
-
-      T parentItem = _items.firstWhere((item) {
-        Map<String, dynamic> mapItem = jsonDecode(jsonEncode(item));
-
-        return mapItem['id'] == mapSubItem['parentId'];
-      });
-      int index = _items.indexWhere((item) => item == parentItem);
-
-      Map<String, dynamic> parentMapItem = jsonDecode(jsonEncode(parentItem));
-      List subProjects = parentMapItem['subProjects'];
-      subProjects
-          .removeWhere((subProject) => subProject['id'] == mapSubItem['id']);
-      parentMapItem['subProjects'] = subProjects;
-
-      T newParentItem = mapToObject(parentMapItem);
-
-      _items[index] = newParentItem;
-    } else {
-      _items.remove(item);
-    }
 
     state = PaginationState.data(_items);
   }
@@ -200,6 +154,7 @@ Future<List<Project>> _fetchData(
 ) async {
   List<Project> value = [];
 
+  // endpoint id?
   await Future.delayed(const Duration(seconds: 1), () {
     value = List<Project>.generate(pageSize, (index) {
       bool isParent = parentItem != null

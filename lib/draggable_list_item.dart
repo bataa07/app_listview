@@ -38,9 +38,19 @@ class DraggableListItem extends HookConsumerWidget {
           child: child,
         ),
       ),
+      childWhenDragging: const SizedBox.shrink(),
       onDragStarted: () {
-        ref.read(provider.notifier).removeAt(index);
         tempProject.value = project;
+      },
+      onDragUpdate: (details) {
+        final box = context.findAncestorRenderObjectOfType() as RenderBox;
+        print(box.size);
+
+        // print(details.delta);
+        // print(details.globalPosition);
+      },
+      onDragCompleted: () {
+        ref.read(provider.notifier).removeAt(index);
       },
       onDraggableCanceled: (velocity, offset) =>
           ref.read(provider.notifier).insert(index, tempProject.value!),

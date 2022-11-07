@@ -45,7 +45,6 @@ _$_Project _$$_ProjectFromJson(Map<String, dynamic> json) => _$_Project(
       status: json['status'] as int,
       createdAt: json['createdAt'] as String,
       currentStep: json['currentStep'] as int,
-      progress: (json['progress'] as num).toDouble(),
       members: (json['members'] as List<dynamic>)
           .map((e) => ProjectMember.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -65,7 +64,6 @@ Map<String, dynamic> _$$_ProjectToJson(_$_Project instance) =>
       'status': instance.status,
       'createdAt': instance.createdAt,
       'currentStep': instance.currentStep,
-      'progress': instance.progress,
       'members': instance.members,
       'isParent': instance.isParent,
       'parentId': instance.parentId,

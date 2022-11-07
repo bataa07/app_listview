@@ -10,10 +10,12 @@ class ListItem extends ConsumerStatefulWidget {
     super.key,
     required this.project,
     required this.index,
+    this.parentConstraint,
   });
 
   final Project project;
   final int index;
+  final BoxConstraints? parentConstraint;
 
   @override
   ConsumerState<ListItem> createState() => _ListItemState();
@@ -76,6 +78,7 @@ class _ListItemState extends ConsumerState<ListItem> {
           project: subProject,
           itemKey: itemKey,
           provider: projectsProvider,
+          parentConstraint: widget.parentConstraint,
           child: ListItem(
             key: itemKey,
             project: subProject,

@@ -9,13 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-GlobalKey globalKey = GlobalKey();
-
 class ProjectContent extends ConsumerStatefulWidget {
-  const ProjectContent({super.key, required this.provider});
+  const ProjectContent(
+      {super.key, required this.provider, required this.constraints});
 
   final StateNotifierProvider<PaginationNotifier<Project>,
       PaginationState<Project>> provider;
+  final BoxConstraints constraints;
 
   @override
   ConsumerState<ProjectContent> createState() => _ProjectContentState();
@@ -25,46 +25,44 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
   final ScrollController _scrollController = ScrollController();
   final _pageKey = const PageStorageKey<String>('projects');
 
-  @override
-  void initState() {
-    super.initState();
+  void _scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 60),
+      curve: Curves.linear,
+    );
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  }
+
+  void _scrollUp() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 10),
+      curve: Curves.fastOutSlowIn,
+    );
+    var to = _scrollController.offset - 3;
+    to = (to < 0) ? 0 : to;
+    _scrollController.jumpTo(to);
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(widget.provider);
-    final dragDetails = ref.watch(isDraggingProvider);
 
-    void _scrollDown() {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: Duration(seconds: 2),
-        curve: Curves.fastOutSlowIn,
-      );
-      _scrollController.jumpTo(_scrollController.offset + 3);
-    }
+    return Listener(
+      onPointerMove: (event) {
+        final parentListMaxHeight = widget.constraints.maxHeight;
+        final distance = event.localPosition.dy;
 
-    void _scrollUp() {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: Duration(seconds: 10),
-        curve: Curves.fastOutSlowIn,
-      );
-      var to = _scrollController.offset - 3;
-      to = (to < 0) ? 0 : to;
-      _scrollController.jumpTo(to);
-    }
+        print('parentListMinHeight: $parentListMaxHeight, distance: $distance');
 
-    if (dragDetails.isDragging && dragDetails.position == DragPosition.top) {
-      _scrollUp();
-    }
-    if (dragDetails.isDragging && dragDetails.position == DragPosition.bottom) {
-      _scrollDown();
-    }
-
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-      return state.when(
+        if (distance > parentListMaxHeight * 0.8) {
+          _scrollDown();
+        } else if (distance < parentListMaxHeight * 0.2) {
+          _scrollUp();
+        }
+      },
+      child: state.when(
         data: (projects) {
           return ListView.builder(
             key: _pageKey,
@@ -88,15 +86,14 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
                   }
                 },
                 child: DraggableListItem(
-                  // onDragToBottom: () => _scrollDown(),
-                  // onDragToTop: () => _scrollUp(),
-                  parentConstraint: constraints,
+                  parentConstraint: widget.constraints,
                   index: index,
                   project: project,
                   itemKey: itemKey,
                   provider: widget.provider,
                   child: ListItem(
                     key: itemKey,
+                    parentConstraint: widget.constraints,
                     project: project,
                     index: index,
                   ),
@@ -108,8 +105,6 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
         loading: () => const ShimmerLoader(shimmerItem: Skeleton()),
         error: (error, stackTrace) => Center(child: Text(error.toString())),
         onLoading: (projects, selectedIndex) {
-          print('selectedIndex: $selectedIndex, projects: ${projects.length}');
-
           return ListView.builder(
             key: _pageKey,
             shrinkWrap: true,
@@ -128,9 +123,19 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
 
               if (project.parentId != null) return const SizedBox.shrink();
 
-              return ListItem(
-                project: project,
+              GlobalKey itemKey = GlobalKey();
+
+              return DraggableListItem(
+                parentConstraint: widget.constraints,
                 index: index,
+                project: project,
+                itemKey: itemKey,
+                provider: widget.provider,
+                child: ListItem(
+                  key: itemKey,
+                  project: project,
+                  index: index,
+                ),
               );
             },
           );
@@ -153,7 +158,7 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
             },
           );
         },
-      );
-    });
+      ),
+    );
   }
 }

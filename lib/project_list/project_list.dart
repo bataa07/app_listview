@@ -39,7 +39,6 @@ class Project with _$Project {
     required int status,
     required String createdAt,
     required int currentStep,
-    required double progress,
     required List<ProjectMember> members,
     @Default(false) bool isParent,
     int? parentId,

@@ -360,7 +360,6 @@ mixin _$Project {
   int get status => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
   int get currentStep => throw _privateConstructorUsedError;
-  double get progress => throw _privateConstructorUsedError;
   List<ProjectMember> get members => throw _privateConstructorUsedError;
   bool get isParent => throw _privateConstructorUsedError;
   int? get parentId => throw _privateConstructorUsedError;
@@ -386,7 +385,6 @@ abstract class $ProjectCopyWith<$Res> {
       int status,
       String createdAt,
       int currentStep,
-      double progress,
       List<ProjectMember> members,
       bool isParent,
       int? parentId});
@@ -415,7 +413,6 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
     Object? status = null,
     Object? createdAt = null,
     Object? currentStep = null,
-    Object? progress = null,
     Object? members = null,
     Object? isParent = null,
     Object? parentId = freezed,
@@ -461,10 +458,6 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
           ? _value.currentStep
           : currentStep // ignore: cast_nullable_to_non_nullable
               as int,
-      progress: null == progress
-          ? _value.progress
-          : progress // ignore: cast_nullable_to_non_nullable
-              as double,
       members: null == members
           ? _value.members
           : members // ignore: cast_nullable_to_non_nullable
@@ -499,7 +492,6 @@ abstract class _$$_ProjectCopyWith<$Res> implements $ProjectCopyWith<$Res> {
       int status,
       String createdAt,
       int currentStep,
-      double progress,
       List<ProjectMember> members,
       bool isParent,
       int? parentId});
@@ -525,7 +517,6 @@ class __$$_ProjectCopyWithImpl<$Res>
     Object? status = null,
     Object? createdAt = null,
     Object? currentStep = null,
-    Object? progress = null,
     Object? members = null,
     Object? isParent = null,
     Object? parentId = freezed,
@@ -571,10 +562,6 @@ class __$$_ProjectCopyWithImpl<$Res>
           ? _value.currentStep
           : currentStep // ignore: cast_nullable_to_non_nullable
               as int,
-      progress: null == progress
-          ? _value.progress
-          : progress // ignore: cast_nullable_to_non_nullable
-              as double,
       members: null == members
           ? _value._members
           : members // ignore: cast_nullable_to_non_nullable
@@ -605,7 +592,6 @@ class _$_Project implements _Project {
       required this.status,
       required this.createdAt,
       required this.currentStep,
-      required this.progress,
       required final List<ProjectMember> members,
       this.isParent = false,
       this.parentId})
@@ -634,8 +620,6 @@ class _$_Project implements _Project {
   final String createdAt;
   @override
   final int currentStep;
-  @override
-  final double progress;
   final List<ProjectMember> _members;
   @override
   List<ProjectMember> get members {
@@ -651,7 +635,7 @@ class _$_Project implements _Project {
 
   @override
   String toString() {
-    return 'Project(id: $id, name: $name, description: $description, organizationId: $organizationId, budget: $budget, startDate: $startDate, endDate: $endDate, status: $status, createdAt: $createdAt, currentStep: $currentStep, progress: $progress, members: $members, isParent: $isParent, parentId: $parentId)';
+    return 'Project(id: $id, name: $name, description: $description, organizationId: $organizationId, budget: $budget, startDate: $startDate, endDate: $endDate, status: $status, createdAt: $createdAt, currentStep: $currentStep, members: $members, isParent: $isParent, parentId: $parentId)';
   }
 
   @override
@@ -674,8 +658,6 @@ class _$_Project implements _Project {
                 other.createdAt == createdAt) &&
             (identical(other.currentStep, currentStep) ||
                 other.currentStep == currentStep) &&
-            (identical(other.progress, progress) ||
-                other.progress == progress) &&
             const DeepCollectionEquality().equals(other._members, _members) &&
             (identical(other.isParent, isParent) ||
                 other.isParent == isParent) &&
@@ -697,7 +679,6 @@ class _$_Project implements _Project {
       status,
       createdAt,
       currentStep,
-      progress,
       const DeepCollectionEquality().hash(_members),
       isParent,
       parentId);
@@ -728,7 +709,6 @@ abstract class _Project implements Project {
       required final int status,
       required final String createdAt,
       required final int currentStep,
-      required final double progress,
       required final List<ProjectMember> members,
       final bool isParent,
       final int? parentId}) = _$_Project;
@@ -755,8 +735,6 @@ abstract class _Project implements Project {
   String get createdAt;
   @override
   int get currentStep;
-  @override
-  double get progress;
   @override
   List<ProjectMember> get members;
   @override

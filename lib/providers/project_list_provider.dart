@@ -154,7 +154,6 @@ Future<List<Project>> _fetchData(
 ) async {
   List<Project> value = [];
 
-  // endpoint id?
   await Future.delayed(const Duration(seconds: 1), () {
     value = List<Project>.generate(pageSize, (index) {
       bool isParent = parentItem != null
@@ -172,7 +171,6 @@ Future<List<Project>> _fetchData(
         description: Faker().lorem.sentence(),
         members: [],
         organizationId: 1,
-        progress: Faker().randomGenerator.integer(100, min: 0) as double,
         startDate: Faker().date.dateTime(minYear: 1990, maxYear: 2022),
         status: 0,
         isParent: isParent,

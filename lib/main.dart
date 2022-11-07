@@ -1,5 +1,4 @@
-import 'package:app_listview/project_content.dart';
-import 'package:app_listview/providers/project_list_provider.dart';
+import 'package:app_listview/project_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -36,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: ProjectContent(provider: projectsProvider),
+      body: const ProjectLayout(),
     );
   }
 }

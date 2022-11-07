@@ -26,14 +26,10 @@ class DraggableListItem extends HookConsumerWidget {
     required this.provider,
     required this.index,
     required this.child,
-    this.onDragToBottom,
-    this.onDragToTop,
     this.parentConstraint,
   });
 
   final BoxConstraints? parentConstraint;
-  final Function()? onDragToBottom;
-  final Function()? onDragToTop;
   final int index;
   final Project project;
   final GlobalKey<State<StatefulWidget>> itemKey;
@@ -56,15 +52,14 @@ class DraggableListItem extends HookConsumerWidget {
           child: child,
         ),
       ),
-      childWhenDragging: const SizedBox.shrink(),
+      // childWhenDragging: const SizedBox.shrink(),
       onDragStarted: () {
         tempProject.value = project;
-      },
-      onDragUpdate: (details) {
-        _handleDrag(ref, details);
-      },
-      onDragCompleted: () {
         ref.read(provider.notifier).removeAt(index);
+      },
+      onDragUpdate: (details) {},
+      onDragCompleted: () {
+        // ref.read(provider.notifier).removeAt(index);
       },
       // onDraggableCanceled: (velocity, offset) =>
       //     ref.read(provider.notifier).insert(index, tempProject.value!),
@@ -124,33 +119,5 @@ class DraggableListItem extends HookConsumerWidget {
         },
       ),
     );
-  }
-
-  void _handleDrag(
-    WidgetRef ref,
-    DragUpdateDetails details,
-  ) {
-    final parentListMaxHeight = parentConstraint!.maxHeight;
-    final parentListMinHeight = parentConstraint!.minHeight;
-    final targetGlobalVeritcalPosition = details.globalPosition.dy;
-
-    if (targetGlobalVeritcalPosition > 0 &&
-        targetGlobalVeritcalPosition >= parentListMaxHeight - 50.0) {
-      ref.read(isDraggingProvider.notifier).state =
-          DragDetails(true, DragPosition.bottom);
-      // if (isDragging.value) {
-      //   onDragToBottom?.call();
-      // }
-    } else if (targetGlobalVeritcalPosition < 100 &&
-        targetGlobalVeritcalPosition <= parentListMinHeight + 150.0) {
-      ref.read(isDraggingProvider.notifier).state =
-          DragDetails(true, DragPosition.top);
-      // if (isDragging.value) {
-      //   onDragToTop?.call();
-      // }
-    } else {
-      ref.read(isDraggingProvider.notifier).state =
-          DragDetails(false, DragPosition.bottom);
-    }
   }
 }

@@ -41,9 +41,8 @@ class Project with _$Project {
     required int currentStep,
     required double progress,
     required List<ProjectMember> members,
-    required List<Project> subProjects,
     @Default(false) bool isParent,
-    @Default(false) bool isLoading,
+    int? parentId,
   }) = _Project;
 
   factory Project.fromJson(Map<String, dynamic> json) =>

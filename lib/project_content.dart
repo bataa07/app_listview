@@ -6,10 +6,11 @@ import 'package:app_listview/providers/project_list_provider.dart';
 import 'package:app_listview/shimmer/shimmer_loader.dart';
 import 'package:app_listview/shimmer/skeleton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-class ProjectContent extends ConsumerStatefulWidget {
+class ProjectContent extends StatefulHookConsumerWidget {
   const ProjectContent(
       {super.key, required this.provider, required this.constraints});
 
@@ -26,40 +27,64 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
   final _pageKey = const PageStorageKey<String>('projects');
 
   void _scrollDown() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 60),
-      curve: Curves.linear,
-    );
-    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 10000),
+        curve: Curves.ease,
+      );
+    });
   }
 
   void _scrollUp() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 10),
-      curve: Curves.fastOutSlowIn,
-    );
-    var to = _scrollController.offset - 3;
-    to = (to < 0) ? 0 : to;
-    _scrollController.jumpTo(to);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.minScrollExtent,
+        duration: const Duration(milliseconds: 10000),
+        curve: Curves.ease,
+      );
+    });
+  }
+
+  void _scrollCurrent() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      double currentScroll = _scrollController.position.pixels;
+
+      _scrollController.jumpTo(currentScroll);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(widget.provider);
+    final orientation = useState<ScrollbarOrientation?>(null);
+
+    useEffect(() {
+      if (orientation.value == ScrollbarOrientation.bottom) {
+        _scrollDown();
+      } else if (orientation.value == ScrollbarOrientation.top) {
+        _scrollUp();
+      } else {
+        _scrollCurrent();
+      }
+
+      return;
+    }, [orientation.value]);
 
     return Listener(
+      onPointerUp: (event) {
+        orientation.value = null;
+      },
       onPointerMove: (event) {
         final parentListMaxHeight = widget.constraints.maxHeight;
         final distance = event.localPosition.dy;
 
-        print('parentListMinHeight: $parentListMaxHeight, distance: $distance');
-
         if (distance > parentListMaxHeight * 0.8) {
-          _scrollDown();
+          orientation.value = ScrollbarOrientation.bottom;
         } else if (distance < parentListMaxHeight * 0.2) {
-          _scrollUp();
+          orientation.value = ScrollbarOrientation.top;
+        } else {
+          orientation.value = null;
         }
       },
       child: state.when(
@@ -81,7 +106,7 @@ class _ProjectContentState extends ConsumerState<ProjectContent> {
                 onVisibilityChanged: (VisibilityInfo info) {
                   if (info.visibleFraction == 0) return;
 
-                  if (projects.length - 3 <= index) {
+                  if (projects.length - 5 <= index) {
                     ref.read(widget.provider.notifier).fetchNextData();
                   }
                 },

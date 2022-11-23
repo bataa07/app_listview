@@ -15,8 +15,6 @@ class FeedbackWidget extends StatelessWidget {
     final RenderBox renderBox =
         dragChildKey.currentContext?.findRenderObject() as RenderBox;
 
-    print("renderBox : ${renderBox.localToGlobal(Offset.zero)}");
-
     final size = renderBox.size;
 
     return SizedBox(
